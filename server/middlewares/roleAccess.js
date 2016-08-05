@@ -2,7 +2,7 @@
   'use strict';
 
   var config = require('./../../config/adminConfig'),
-    Role = require('./../models/role.models');
+    Role = require('./../models/role');
 
     exports.roleAccess = function (req, res, next) {
       if(req.body.title === config.role){

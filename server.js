@@ -6,6 +6,8 @@
     app = require('./config/express'),
     port = process.env.PORT || 9000;
 
+    mongoose.Promise = Promise;
+
   mongoose.connect(db.url || process.env.DATABASE_URL);
 
   app.listen(port);

@@ -7,7 +7,7 @@
 
   exports.createDocument = function(req, res) {
     Role.findOne({
-      _id: req.body.role
+      _id: req.body.roleId
     }, function(err, role) {
         if(err) {
           res.send(err);
@@ -18,7 +18,7 @@
             });
           } else {
             User.findOne({
-              username: req.body.username
+              _id: req.body.userId
             }, function(err, user) {
                 if(err) {
                   res.send(err);
@@ -45,16 +45,17 @@
                             var newDoc = new Document({
                               title: req.body.title,
                               content: req.body.content,
-                              ownerId: user.id,
-                              role: role
+                              userId: req.body.userId,
+                              roleId: req.body.roleId
                             });
-                            newDoc.save(function (err) {
+                            newDoc.save(function (err, doc) {
                               if (err) {
                                 res.send(err);
                               } else {
                                 res.status(200).json({
                                   success: true,
-                                  message: 'Document successfully created'
+                                  message: 'Document successfully created',
+                                  doc: doc
                                 });
                               }
                             });
@@ -97,7 +98,7 @@
   };
   exports.getDocumentByRole = function (req, res) {
     Document.find({
-      role: req.params.role
+      role: req.params.roleId
     })
     .limit(parseInt(req.params.limit))
     .exec(function (err, doc){
@@ -154,7 +155,7 @@
       });
   };
   exports.deleteDocument = function (req, res) {
-    Document.findByIdAndDelete(req.params.id, function (err, doc) {
+    Document.findByIdAndRemove(req.params.id, function (err, doc) {
       if (err) {
         res.send(err);
       } else if (!doc) {

@@ -4,11 +4,43 @@
 
   var User = require('./../models/user.js'),
   Role = require('./../models/role.js'),
-  Document = require('./../models/document.js');
+  Document = require('./../models/document.js'),
+  helper = require('./../helper/helper'),
+  config = require('./../../config/config'),
+  jwt = require('jsonwebtoken');
+
+  exports.login = function(req, res) {
+    User.findOne({
+      username: req.body.username
+    }, function(err, user) {
+      if (err) {
+        res.send(err);
+      } else if (!user) {
+        res.status(404).json({
+          message: 'User does not found'
+        });
+      } else {
+          if(helper.comparePassword(req.body.password, user.password)) {
+            var token = jwt.sign(user, config.secret, {
+              expiresIn : 60*60*24
+            });
+            res.json({
+              message: 'Successfully logged in',
+              token: token,
+              user: user
+            });
+          } else {
+            res.status(404).json({
+              message: 'Authentication failed. Wrong password'
+            });
+          }
+      }
+    });
+  };
 
   exports.createUser = function(req, res) {
     Role.findOne({
-      _id: req.body.role
+      _id: req.body.roleId
     }, function(err, role) {
       if(err) {
         res.send(err);
@@ -49,12 +81,13 @@
                   success: false,
                   message: 'Please enter your password'
                 });
-              } else if (!req.body.role) {
+              } else if (!req.body.roleId) {
                 res.status(406).json({
                   success: false,
                   message: 'Please enter a role'
                 });
               } else {
+                //console.log('here', role);
                 var newUser = new User({
                   name: {
                     firstName: req.body.firstName,
@@ -63,9 +96,11 @@
                   username: req.body.username,
                   email: req.body.email,
                   password: req.body.password,
-                  role: req.body.role
+                  roleId: req.body.roleId
                 });
+                console.log(newUser, 'fhjj;k');
                 newUser.save(function(err) {
+                  console.log(user, 'here');
                   if(err) {
                     res.send(err);
                   } else {
@@ -81,6 +116,7 @@
       }
     });
   };
+
   exports.getAllUsers = function (req, res) {
     User.find({}).exec(function (err, users) {
       if(err) {
@@ -95,22 +131,7 @@
         }
     });
   };
-  exports.getAUser = function (req, res) {
-    User.findOne({
-      username: req.body.username
-    }, function(err, user) {
-      if(err) {
-        res.send(err);
-      } else if(!user) {
-        res.status(404).json({
-          success: false,
-          message: 'User not found'
-        });
-      } else {
-        res.status.send(user);
-      }
-    });
-  };
+
   exports.getUserById = function (req, res) {
     User.findById(req.params.id, function (err, user) {
       if(err) {
@@ -125,6 +146,7 @@
       }
     });
   };
+
   exports.updateUser = function (req, res) {
     req.body.name = {
       firstName: req.body.firstName,
@@ -162,6 +184,23 @@
       }
     });
   };
+
+  exports.deleteUser = function(req, res) {
+    User.findByIdAndRemove(req.params.id, function(err, user) {
+      if(err) {
+        res.send(err);
+      } else if (!user) {
+        res.status(404).json({
+          message: 'User not found'
+        });
+      } else {
+        res.status(200).json({
+          message: 'User deleted'
+        });
+      }
+    });
+  };
+
   exports.findUserByDoc = function (req, res) {
     Document.find({
       ownerId: req.params.id
@@ -178,4 +217,5 @@
       }
     });
   };
+
 })();

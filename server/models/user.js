@@ -3,21 +3,11 @@
 
   var mongoose = require('mongoose'),
     bcrypt = require('bcrypt'),
-    SALT_WORK_FACTOR = 50,
-    Schema = mongoose.Schema(),
+    SALT_WORK_FACTOR = 10,
+    Schema = mongoose.Schema,
     ObjectId = Schema.Types.ObjectId;
 
     var userSchema = new Schema({
-      username : {
-        type: String,
-        required: true,
-        validate: {
-          validator: function(username) {
-            return /\w/.test(username);
-          },
-          message: "{VALUE} is not valid"
-        }
-      },
       name : {
         firstName : {
           type: String,
@@ -38,6 +28,16 @@
             },
             message: "{VALUE} is not valid"
           }
+        }
+      },
+      username : {
+        type: String,
+        required: true,
+        validate: {
+          validator: function(username) {
+            return /\w/.test(username);
+          },
+          message: "{VALUE} is not valid"
         }
       },
       email : {

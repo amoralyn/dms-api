@@ -18,6 +18,7 @@
         var newRole = new Role({
           title: req.body.title
         });
+        console.log(newRole);
         newRole.save(function(err) {
           if (err) {
             res.send(err);
@@ -31,6 +32,7 @@
       }
     });
   };
+
   exports.getAllRoles = function (req, res) {
     Role.find({}).exec(function (err, roles) {
       if(err) {
