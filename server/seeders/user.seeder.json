@@ -1,0 +1,28 @@
+[{
+    "name": {
+      "firstName": "Lovelyn",
+      "lastName": "Tijesunimi-Israel"
+    },
+    "userName": "amoralyn",
+    "role": "Administrator",
+    "email": "amore@gmail.com",
+    "password": "lovelyn"
+  }, {
+    "name": {
+      "firstName": "Maryam",
+      "lastName": "Babalola"
+    },
+    "userName": "Yhemmy",
+    "email": "yhemmy@gmail.com",
+    "password": "yhemmy",
+    "role": "Manager"
+  }, {
+    "name": {
+      "firstName": "Kehinde",
+      "lastName": "Oni"
+    },
+    "userName": "Kenny",
+    "email": "kenny@gmail.com",
+    "password": "kendulala",
+    "role": "Supervisor"
+  }]
