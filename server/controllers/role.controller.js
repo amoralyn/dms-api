@@ -48,7 +48,7 @@
     });
   };
   exports.getRoleById = function (req, res) {
-    User.findById(req.params.id, function (err, role) {
+    Role.findById(req.params.id, function (err, role) {
       if(err) {
         res.send(err);
       } else if (!role) {

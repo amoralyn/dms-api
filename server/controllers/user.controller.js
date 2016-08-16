@@ -17,7 +17,8 @@
         res.send(err);
       } else if (!user) {
         res.status(404).json({
-          message: 'User does not found'
+          success: false,
+          message: 'Authentication failed. user not found'
         });
       } else {
           if(helper.comparePassword(req.body.password, user.password)) {
@@ -25,12 +26,14 @@
               expiresIn : 60*60*24
             });
             res.json({
+              success: true,
               message: 'Successfully logged in',
               token: token,
               user: user
             });
           } else {
             res.status(404).json({
+              success: false,
               message: 'Authentication failed. Wrong password'
             });
           }
@@ -47,7 +50,7 @@
       } else if(!role) {
         res.status(400).json({
           success: false,
-          message: 'Role not found'
+          message: 'Role not found. Create first'
         });
       } else {
         User.findOne({
@@ -98,9 +101,7 @@
                   password: req.body.password,
                   roleId: req.body.roleId
                 });
-                console.log(newUser, 'fhjj;k');
                 newUser.save(function(err) {
-                  console.log(user, 'here');
                   if(err) {
                     res.send(err);
                   } else {
