@@ -12,7 +12,7 @@
         .post(userController.login);
 
       //route to create a new user
-      router.route('/users')
+      router.route('/user')
         .post(userController.createUser);
 
       //route to get all available users

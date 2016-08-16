@@ -3,7 +3,7 @@
 
   var mongoose = require('mongoose'),
     db = require('./config/database'),
-    app = require('./config/express'),
+    app = require('./config/express').app,
     port = process.env.PORT || 9000;
 
     mongoose.Promise = Promise;

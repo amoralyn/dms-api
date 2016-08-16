@@ -56,9 +56,10 @@
         },
         message: "{VALUE} is not valid"
       },
-      roleId: {
+      role: {
         type: ObjectId,
-        ref: 'Role'
+        ref: 'Role',
+        required: true
       },
       createdAt : {
         type: Date,

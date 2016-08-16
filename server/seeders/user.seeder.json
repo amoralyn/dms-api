@@ -3,7 +3,7 @@
       "firstName": "Lovelyn",
       "lastName": "Tijesunimi-Israel"
     },
-    "userName": "amoralyn",
+    "username": "amoralyn",
     "role": "Administrator",
     "email": "amore@gmail.com",
     "password": "lovelyn"
@@ -12,7 +12,7 @@
       "firstName": "Maryam",
       "lastName": "Babalola"
     },
-    "userName": "Yhemmy",
+    "username": "Yhemmy",
     "email": "yhemmy@gmail.com",
     "password": "yhemmy",
     "role": "Manager"
@@ -21,7 +21,7 @@
       "firstName": "Kehinde",
       "lastName": "Oni"
     },
-    "userName": "Kenny",
+    "username": "Kenny",
     "email": "kenny@gmail.com",
     "password": "kendulala",
     "role": "Supervisor"
