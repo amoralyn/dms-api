@@ -166,7 +166,7 @@
   exports.getDocumentByUser = function (req, res) {
     //find documents with a specific user
     Document.find({
-      ownerId: req.params.ownerId
+      userId: req.params.userId
     })
     //parsing the limit
     .limit(parseInt(req.params.limit))
