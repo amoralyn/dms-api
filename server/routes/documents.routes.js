@@ -25,7 +25,7 @@
         .get(auth.authMiddleware, documentController.getDocumentByRole);
 
       //route to get all documents of a specific user
-      router.route('/user/:ownerId/documents')
+      router.route('/user/:userId/documents')
         .get(auth.authMiddleware, documentController.getDocumentByUser);
 
       //route to get a document by its Id
