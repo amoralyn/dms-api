@@ -3,13 +3,18 @@ node_js:
   - "4"
 services:
   - mongodb
-before_script:
-  - npm run db:seed
 script:
   - npm test
 after_success:
   - npm install codeclimate-test-reporter -g
   - npm run coverage
+env:
+  - CXX=g++-4.8
 addons:
+    apt:
+      sources:
+        - ubuntu-toolchain-r-test
+      packages:
+        - g++-4.8
     code_climate:
         repo_token:c8a410eaa0ac8d89da74fddc6ade8d54b8c7d37b88ac645ee9e92421c50a27ab

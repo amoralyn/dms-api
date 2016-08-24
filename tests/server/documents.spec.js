@@ -4,7 +4,7 @@
 
   var jwt = require('jsonwebtoken'),
     expect = require('expect.js'),
-    // server = require('./../../server.js'),
+    server = require('./../../server.js'),
     server1 = require('./../../config/express').app,
     request = require('supertest')(server1),
     user = require('./../../server/models/user.js'),
@@ -152,7 +152,6 @@
           doc_user = users._id;
           //creating a document using the content of the document seeder
           docs.create(docSeeders[2]).then(function(doc) {
-            console.log(doc, 'this one');
             doc_id = doc._id;
             title = doc.title;
             done();
@@ -194,7 +193,6 @@
         .set('x-access-token', userToken)
         .expect(200)
         .end(function(err, res) {
-          console.log(res.body);
           expect(res.status).to.be(200);
           expect(res.body.length).to.not.be(0);
           expect(res.body[0].title).to.be('third');
@@ -238,7 +236,6 @@
         .set('x-access-token', userToken)
         .expect(200)
         .end(function(err, res) {
-          console.log(res.body);
           expect(res.status).to.be(200);
           expect(res.body.length).to.not.be(0);
           expect(res.body[0].title).to.be('third');
