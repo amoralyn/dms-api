@@ -64,20 +64,20 @@
       });
     });
 
-    // it('creates unique documents', function(done) {
-    //   docSeeders[1].role = 'Supervisor';
-    //   docSeeders[1].ownerId = 'Kendulala';
-    //   request.post('/api/documents')
-    //     .set('x-access-token', userToken)
-    //     .send(docSeeders[1])
-    //     .expect(409)
-    //     .end(function(err, res) {
-    //       expect(res.status).to.be(409);
-    //       expect(res.body.success).to.eql(false);
-    //       expect(res.body.message).to.eql('Document already exists!');
-    //       done();
-    //     });
-    // });
+    it('creates unique documents', function(done) {
+      docSeeders[1].role = 'Supervisor';
+      docSeeders[1].ownerId = 'Kendulala';
+      request.post('/api/documents')
+        .set('x-access-token', userToken)
+        .send(docSeeders[1])
+        .expect(409)
+        .end(function(err, res) {
+          expect(res.status).to.be(409);
+          expect(res.body.success).to.eql(false);
+          expect(res.body.message).to.eql('Document already exists!');
+          done();
+        });
+    });
 
     it('should not create document for unauthenticated user', function(done) {
       request.post('/api/documents/')
