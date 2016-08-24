@@ -2,15 +2,13 @@
   'use strict';
 
   var mongoose = require('mongoose'),
-  User = require('./user'),
-  Role = require('./role'),
   Schema = mongoose.Schema,
   ObjectId = Schema.Types.ObjectId;
 
   var documentSchema = new Schema({
     userId : {
       type: ObjectId,
-      ref: User
+      ref: 'User'
     },
     title : {
       type: String,
@@ -30,9 +28,10 @@
       },
       message: "{VALUE} is not valid"
     },
-    roleId: {
+    role: {
       type: ObjectId,
-      ref: Role
+      ref: 'Role',
+      required: true
     },
     createdAt : {
       type: Date,

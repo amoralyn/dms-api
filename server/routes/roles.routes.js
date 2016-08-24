@@ -17,13 +17,13 @@
         .delete(roleController.deleteRole);
 
         //route to create and return all available role(s)
-        router.route('/role/superAdministrator/:userName')
+        router.route('/role/superAdministrator/:username')
           .post(auth.verifyAdmin, roleAccess.roleAccess,
             roleController.createRole)
           .get(auth.verifyAdmin, roleController.getAllRoles);
 
         //route to delete a specific role
-        router.route('/role/superAdministrator/userName/:id')
+        router.route('/role/superAdministrator/:username/:id')
           .delete(roleAccess.roleAuth, roleController.deleteRole);
     }
 

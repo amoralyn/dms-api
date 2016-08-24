@@ -20,7 +20,7 @@
         .get(auth.authMiddleware, documentController.getAllDocuments);
 
       //route to get all documents with a specific role
-      router.route('/documents/role/role/limit')
+      router.route('/documents/role/:role/:limit')
         .get(auth.authMiddleware, documentController.getDocumentByRole);
 
       //route to get all documents of a specific user
@@ -38,7 +38,7 @@
         .delete(auth.authMiddleware, userAccess.userAccess,
           documentController.deleteDocument);
 
-      router.route('/documents/title/title/:id')
+      router.route('/documents/title/:title/:id')
         .put(auth.authMiddleware, userAccess.userAccess,
           documentController.editDocument)
         .delete(auth.authMiddleware, userAccess.userAccess,
