@@ -4,7 +4,6 @@
 
   var jwt = require('jsonwebtoken'),
     expect = require('expect.js'),
-    server = require('./../../server.js'),
     server1 = require('./../../config/express').app,
     request = require('supertest')(server1),
     user = require('./../../server/models/user.js'),
