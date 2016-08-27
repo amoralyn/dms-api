@@ -12,7 +12,7 @@
      * @return {[json]}        [message that permission has been denied]
      */
     exports.userAccess = function (req, res, next) {
-      documents.findOne(req.params.id, function (err, doc) {
+      documents.findOne( { '_id': req.params.id }, function (err, doc) {
         if (err) {
           res.send(err);
         } else if (!doc) {
