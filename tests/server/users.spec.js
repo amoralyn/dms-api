@@ -24,10 +24,11 @@ describe('users', function() {
           done();
         }, function(err) {
           console.log(err);
+          done();
         });
       }, function(err) {
         console.log(err);
-        // done();
+        done();
       });
     });
 
@@ -38,6 +39,7 @@ describe('users', function() {
         role.remove({}).exec(function(err) {
           if (err) {
             console.log(err);
+            done();
           }
           done();
         });
@@ -353,6 +355,7 @@ describe('users', function() {
           role.remove({}).exec(function(err) {
             if (err) {
               console.log(err);
+              done();
             }
             done();
           });
