@@ -4,7 +4,6 @@
 
   var jwt = require('jsonwebtoken'),
     expect = require('expect.js'),
-    server = require('./../../server.js'),
     server1 = require('./../../config/express').app,
     request = require('supertest')(server1),
     user = require('./../../server/models/user.js'),
@@ -28,7 +27,7 @@ describe('users', function() {
         });
       }, function(err) {
         console.log(err);
-        // done();
+        done();
       });
     });
 
@@ -39,6 +38,7 @@ describe('users', function() {
         role.remove({}).exec(function(err) {
           if (err) {
             console.log(err);
+            done();
           }
           done();
         });
@@ -354,6 +354,7 @@ describe('users', function() {
           role.remove({}).exec(function(err) {
             if (err) {
               console.log(err);
+              done();
             }
             done();
           });
@@ -394,7 +395,6 @@ describe('users', function() {
             password: 'mine',
             role: userSeeders[2].role
           }).expect(200).end(function(err, res) {
-            console.log(res.body);
             expect(res.body.success).to.eql(true);
             expect(res.body.message).to.eql('User Successfully Updated!');
             done();

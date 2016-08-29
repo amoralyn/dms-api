@@ -5,3 +5,10 @@ ratings:
      - '**.js'
 exclude_paths:
   - "tests/*"
+engines:
+  eslint:
+    enabled: false
+
+ratings:
+   paths:
+   - "**.js"

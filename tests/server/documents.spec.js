@@ -4,7 +4,7 @@
 
   var jwt = require('jsonwebtoken'),
     expect = require('expect.js'),
-    // server = require('./../../server.js'),
+    server = require('./../../server.js'),
     server1 = require('./../../config/express').app,
     request = require('supertest')(server1),
     user = require('./../../server/models/user.js'),
@@ -29,7 +29,9 @@
             expiresIn: 60*60*24
           });
           docSeeders[1].role = Role._id;
-          docSeeders[1].ownerId = users._id;
+          docSeeders[1].userId = users._id;
+          docSeeders[2].role = Role._id;
+          docSeeders[2].userId = users._id;
           //creating a document using the content of the document seeder
           docs.create(docSeeders[1]).then(function() {}, function(err) {
             if (err) {
@@ -64,20 +66,20 @@
       });
     });
 
-    // it('creates unique documents', function(done) {
-    //   docSeeders[1].role = 'Supervisor';
-    //   docSeeders[1].ownerId = 'Kendulala';
-    //   request.post('/api/documents')
-    //     .set('x-access-token', userToken)
-    //     .send(docSeeders[1])
-    //     .expect(409)
-    //     .end(function(err, res) {
-    //       expect(res.status).to.be(409);
-    //       expect(res.body.success).to.eql(false);
-    //       expect(res.body.message).to.eql('Document already exists!');
-    //       done();
-    //     });
-    // });
+    it('creates unique documents', function(done) {
+      // docSeeders[1].role = 'Supervisor';
+      // docSeeders[1].ownerId = 'Kendulala';
+      request.post('/api/documents')
+        .set('x-access-token', userToken)
+        .send(docSeeders[1])
+        .expect(409)
+        .end(function(err, res) {
+          expect(res.status).to.be(409);
+          expect(res.body.success).to.eql(false);
+          expect(res.body.message).to.eql('Document already exists');
+          done();
+        });
+    });
 
     it('should not create document for unauthenticated user', function(done) {
       request.post('/api/documents/')
@@ -108,15 +110,12 @@
     });
 
     it('should create a new document', function(done) {
-      docSeeders[2].role = 'Supervisor';
-      docSeeders[2].ownerId = 'Kendulala';
       request.post('/api/documents')
         .set('x-access-token', userToken)
         .send(docSeeders[2])
         .expect(200)
         .end(function(err, res) {
           expect(res.status).to.be(200);
-          console.log(res.body, 'here');
           expect(res.body.success).to.eql(true);
           expect(res.body.message).to.eql('Document successfully created');
           done();
@@ -143,10 +142,10 @@
 
           //assigning the role and ownerId of docSeeders[2] to an Id
           docSeeders[2].role = Role._id;
-          docSeeders[2].ownerId = users._id;
+          docSeeders[2].userId = users._id;
 
           //assigning the role and ownerId of docSeeders[0] to an Id
-          docSeeders[0].ownerId = users._id;
+          docSeeders[0].userId = users._id;
           docSeeders[0].role = Role._id;
 
           doc_role = Role._id;
@@ -274,9 +273,9 @@
       var id = '568831c53ff90b4456491b51';
       request.get('/api/documents/' + id)
         .set('x-access-token', userToken)
-        .expect(400)
+        .expect(404)
         .end(function(err, res) {
-          expect(res.status).to.be(400);
+          expect(res.status).to.be(404);
           expect(res.body.success).to.eql(false);
           expect(res.body.message).to.eql('Document not found');
           done();
@@ -294,7 +293,7 @@
         .end(function(err, res) {
           expect(res.status).to.be(200);
           expect(res.body.success).to.eql(true);
-          expect(res.body.message).to.eql('Document Successfully updated!');
+          expect(res.body.message).to.eql('Document successfully Updated!');
 
           done();
         });
@@ -316,7 +315,7 @@
         .end(function(err, res) {
           expect(res.status).to.be(403);
           expect(res.body.success).to.eql(false);
-          expect(res.body.message).to.eql('Access denied');
+          expect(res.body.message).to.eql('Access Denied');
 
           done();
         });
@@ -334,7 +333,7 @@
         .end(function(err, res) {
           expect(res.status).to.be(404);
           expect(res.body.success).to.eql(false);
-          expect(res.body.message).to.eql('Document does not exist');
+          expect(res.body.message).to.eql('Document not found');
 
           done();
         });
@@ -356,9 +355,9 @@
       var id = '568831c53ff90b4456491b50';
       request.delete('/api/documents/' + id)
         .set('x-access-token', userToken)
-        .expect(400)
+        .expect(404)
         .end(function(err, res) {
-          expect(res.status).to.eql(400);
+          expect(res.status).to.eql(404);
           expect(res.body.success).to.eql(false);
           expect(res.body.message).to.eql('Document not found');
           done();
@@ -377,7 +376,7 @@
         .end(function(err, res) {
           expect(res.status).to.eql(403);
           expect(res.body.success).to.eql(false);
-          expect(res.body.message).to.eql('Access denied');
+          expect(res.body.message).to.eql('Access Denied');
           done();
         });
     });
