@@ -2,6 +2,8 @@
 # DOCUMENT MANAGEMENT SYSTEM
 [![Code Climate](https://codeclimate.com/github/andela-ltijesunimi-israel/dms-api/badges/gpa.svg)](https://codeclimate.com/github/andela-ltijesunimi-israel/dms-api)
 
+[![Build Status](https://travis-ci.org/andela-ltijesunimi-israel/dms-api.svg?branch=master)](https://travis-ci.org/andela-ltijesunimi-israel/dms-api)
+
 Document Management System is an application that helps users manage their documents in an organized way. A User can upload a document, edit and share it with other users. Aside from enabling users to properly document their work with regard to category, the application permits users to work collaboratively on documents.
 
 ## Development
