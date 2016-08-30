@@ -3,6 +3,22 @@
 
   var Role = require('./../models/role.js');
 
+
+  function sendError(res, code, msg, bool) {
+    res.status(code).json({
+      success: bool,
+      message: msg
+    });
+  }
+
+  function sendSuccess(res, msg, doc) {
+    res.status(200).json({
+      success: true,
+      message: msg,
+      doc: doc
+    });
+  }
+
 /**
  * [function to create a role]
  * @param  {[http request object]} req [used to get request query]
@@ -18,10 +34,7 @@
         res.send(err);
         //if role exists
       } else if (role){
-        res.status(409).json({
-          success: false,
-          message: "Role already exists"
-        });
+          sendError(res, 409, 'Role already exists', false);
       } else {
         var newRole = new Role({
           title: req.body.title
@@ -31,10 +44,7 @@
           if (err) {
             res.send(err);
           } else {
-            res.status(200).json({
-              success: true,
-              message: 'Role successfully created!'
-            });
+              sendSuccess(res, 'Role successfully created', true);
           }
         });
       }
@@ -54,10 +64,7 @@
         res.send(err);
         // if no role is found
       } else if (!roles) {
-        res.status(404).json({
-          success: true,
-          message: "No Roles exist yet."
-        });
+        sendError(res, 404, 'No roles exists yet', false);
         } else {
           res.status(200).send(roles);
         }
@@ -77,10 +84,7 @@
         res.send(err);
         // if role is not found
       } else if (!role) {
-        res.status(404).json({
-          success: false,
-          message: "Role not found"
-        });
+        sendError(res, 404, 'Role not found', false);
       } else {
         res.send(role);
       }
@@ -99,21 +103,12 @@
       req.params.id, req.body,
       function (err, role) {
         if(err){
-          res.json({
-            success: false,
-            message: 'Role update failed'
-          });
+          sendError(res, null, 'Role update failed', false);
           //if role is not found
         } else if (!role) {
-          res.status(404).json({
-            success:false,
-            message: 'Role not found'
-          });
+          sendError(res, 404, 'Role not found', false);
         } else {
-          res.status(200).json({
-            success:true,
-            message: 'Role successfully updated'
-          });
+            sendSuccess(res, 'Role successfully updated', true);
         }
       });
   };
@@ -128,21 +123,12 @@
     //find a role with a specific id and delete
     Role.findById(req.params.id).remove(function (err, role) {
       if (err) {
-        res.json({
-          success: false,
-          message: 'Role delete failed'
-        });
+        sendError(res, null, 'Role delete failed', false);
         //if role is not found
       } else if (!role) {
-        res.status(404).json({
-          success:false,
-          message: 'Role not found'
-        });
+        sendError(res, 404, 'Role not found', false);
       } else {
-        res.status(200).json({
-          success: true,
-          message: 'Role successfully deleted'
-        });
+        sendSuccess(res, 'Role successfully deleted', true);
       }
     });
   };

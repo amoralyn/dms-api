@@ -3,11 +3,28 @@
 
 
   var User = require('./../models/user.js'),
-  Role = require('./../models/role.js'),
-  Document = require('./../models/document.js'),
-  helper = require('./../helper/helper'),
-  config = require('./../../config/config'),
-  jwt = require('jsonwebtoken');
+    Role = require('./../models/role.js'),
+    Document = require('./../models/document.js'),
+    helper = require('./../helper/helper'),
+    config = require('./../../config/config'),
+    jwt = require('jsonwebtoken');
+
+  function sendError(res, code, msg, bool) {
+    res.status(code).json({
+      success: bool,
+      message: msg
+    });
+  }
+
+  function sendSuccess(res, msg, token, user) {
+    res.status(200).json({
+      success: true,
+      message: msg,
+      token: token,
+      user: user
+    });
+  }
+
 
 /**
  * [function to login a valid user]
@@ -24,10 +41,8 @@
         res.send(err);
         //if user is not found
       } else if (!user) {
-        res.status(404).json({
-          success: false,
-          message: 'Authentication failed. user not found'
-        });
+        sendError(res, 404, 'Authentication failed. User not found', false);
+
       } else {
         //check if password matches
           if(helper.comparePassword(req.body.password, user.password)) {
@@ -36,17 +51,9 @@
             var token = jwt.sign(user, config.secret, {
               expiresIn : 60*60*24
             });
-            res.json({
-              success: true,
-              message: 'Successfully logged in',
-              token: token,
-              user: user
-            });
+            sendSuccess(res, 'Successfully logged in', true, token, user);
           } else {
-            res.status(404).json({
-              success: false,
-              message: 'Authentication failed. Wrong password'
-            });
+            sendError(res, 404, 'Authentication failed. Wrong password', false);
           }
       }
     });
@@ -67,79 +74,69 @@
         res.send(err);
         //if role does not exists
       } else if(!role) {
-        res.status(400).json({
-          success: false,
-          message: 'Role not found. Create first'
-        });
+        sendError(res, 404, 'Role not found. Create first', false);
       } else {
         //check is user exists
-        User.findOne({
-          username: req.body.username
-        }, function(err, user) {
-          if(err) {
-            res.send(err);
-          } else if(user) {
-            //if user is found
-            res.status(409).json({
-              success: false,
-              message: 'user already exists'
-            });
-          } else {
-            //ensuring all parameters are entered before creating user
-              if (!req.body.firstName && !req.body.lastName) {
-                res.status(406).json({
-                  success: false,
-                  message: 'Please enter your first name and last name'
-                });
-              } else if (!req.body.email) {
-                res.status(406).json({
-                  success: false,
-                  message: 'Please enter your email'
-                });
-              } else if (!req.body.username) {
-                res.status(406).json({
-                  success: false,
-                  message: 'Please enter your username'
-                });
-              } else if (!req.body.password) {
-                res.status(406).json({
-                  success: false,
-                  message: 'Please enter your password'
-                });
-              } else if (!req.body.role) {
-                res.status(406).json({
-                  success: false,
-                  message: 'Please enter a role'
-                });
-              } else {
-                var newUser = new User({
-                  name: {
-                    firstName: req.body.firstName,
-                    lastName: req.body.lastName
-                  },
-                  username: req.body.username,
-                  email: req.body.email,
-                  password: req.body.password,
-                  role: req.body.role
-                });
-                //create new user
-                newUser.save(function(err) {
-                  if(err) {
-                    res.send(err);
-                  } else {
-                    res.status(200).json({
-                      success: true,
-                      message: 'User successfully created'
-                    });
-                  }
-                });
-              }
-          }
-        });
+        getUser(req, res);
       }
     });
   };
 
+  function getUser(req, res) {
+    User.findOne({
+      username: req.body.username
+    }, function(err, user) {
+      if(err) {
+        res.send(err);
+      } else if(user) {
+        //if user is found
+        sendError(res, 409, 'user already exists', false);
+      } else {
+        //ensuring all parameters are entered before creating user
+          if (!req.body.firstName && !req.body.lastName) {
+            sendError(res, 406,
+              'Please enter your first name and last name', false);
+          } else if (!req.body.email) {
+            sendError(res, 406, 'Please enter your email', false);
+          } else if (!req.body.username) {
+            sendError(res, 406, 'Please enter your username', false);
+          } else if (!req.body.password) {
+            sendError(res, 406, 'Please enter your password', false);
+          } else if (!req.body.role) {
+            sendError(res, 406, 'Please enter a role',false);
+          } else {
+            //create new user
+            createNewUser(req).save(function(err) {
+              if(err) {
+                res.send(err);
+              } else {
+                sendSuccess(res, 'User successfully created', true);
+              }
+            });
+          }
+      }
+    });
+  }
+
+/**
+ * [createNewUser description]
+ * @param  {[http request object]} req [used to get request query]
+ * @return {[json]}     [returns User Object]
+ */
+function createNewUser(req) {
+  var newUser = new User({
+    name: {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName
+    },
+    username: req.body.username,
+    email: req.body.email,
+    password: req.body.password,
+    role: req.body.role
+  });
+
+  return newUser;
+}
 /**
  * [function to return all users]
  * @param  {[http request object]} req [used to get request query]
@@ -153,10 +150,7 @@
         res.send(err);
         //if no user exists
       } else if (!users) {
-        res.status(404).json({
-          success: true,
-          message: 'No Users exist yet.'
-        });
+        sendError(res, 404, 'No Users exist yet', false);
         } else {
           res.status(200).send(users);
         }
@@ -176,10 +170,7 @@
         res.send(err);
         //if user is not found
       } else if (!user) {
-        res.status(404).json({
-          success: false,
-          message: 'User not found'
-        });
+        sendError(res, 404, 'User not found', false);
       } else {
         res.send(user);
       }
@@ -205,10 +196,7 @@
         res.send(err);
         //if role doesn't exist
       } else if(!role) {
-        res.status(404).json({
-          success: false,
-          message: 'Role does not exist'
-        });
+        sendError(res, 404, 'Role does not exist', false);
       } else {
         req.body.role = role;
         //find user with a specific Id and update its details
@@ -219,15 +207,9 @@
               res.send(err);
               //if user is not found
             } else if (!user) {
-              res.status(404).json({
-                success:false,
-                message: 'User not found'
-              });
+              sendError(res, 404, 'User not found', false);
             } else {
-              res.status(200).json({
-                success:true,
-                message: 'User Successfully Updated!'
-              });
+              sendSuccess(res, 'User successfully updated', true);
             }
           });
       }
@@ -247,13 +229,9 @@
         res.send(err);
         //if user is not found
       } else if (!user) {
-        res.status(404).json({
-          message: 'User not found'
-        });
+        sendError(res, 404, 'User not found', false);
       } else {
-        res.status(200).json({
-          message: 'User deleted'
-        });
+        sendSuccess(res, 'User deleted', true);
       }
     });
   };
@@ -273,10 +251,7 @@
         res.send(err);
         //if document is not found
       } else if (!docs) {
-        res.status(404).json({
-          success: false,
-          message: 'Documents not found'
-        });
+        sendError(res, 404, 'Documents not found', false);
       } else {
         res.status(200).json(docs);
       }
