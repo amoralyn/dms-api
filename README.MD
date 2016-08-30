@@ -26,23 +26,17 @@ This will install the required dependencies.
 
 5. Run
 
-`npm run db:seed`
-
-This will seed the database
-
-6. Run
-
 `npm test`
 
 to run the tests.
 
-7. Run
+6. Run
 
 `npm start`
 
 Use [Postman](https://www.getpostman.com/) to consume the API.
 
-8. Enjoy the ride... :wink:
+7. Enjoy the ride... :wink:
 
 ### Code Example
 
