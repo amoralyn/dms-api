@@ -81,7 +81,7 @@ describe('users', function() {
           expect(res.status).to.be(404);
           expect(res.body.success).to.eql(false);
           expect(res.body.message).to.eql
-            ('Authentication failed. user not found');
+            ('Authentication failed. User not found');
           done();
         });
     });
@@ -166,9 +166,9 @@ describe('users', function() {
             email: userSeeders[1].email,
             roleId: 'Owner'
           })
-          .expect(400)
+          .expect(404)
           .end(function(err, res) {
-            expect(res.status).to.be(400);
+            expect(res.status).to.be(404);
             expect(res.body.success).to.eql(false);
             expect(res.body.message).to.eql('Role not found. Create first');
             done();
@@ -184,9 +184,9 @@ describe('users', function() {
             password: userSeeders[1].password,
             email: userSeeders[1].email,
           })
-          .expect(400)
+          .expect(404)
           .end(function(err, res) {
-            expect(res.status).to.be(400);
+            expect(res.status).to.be(404);
             expect(res.body.success).to.eql(false);
             expect(res.body.message).to.eql('Role not found. Create first');
             done();
@@ -396,7 +396,7 @@ describe('users', function() {
             role: userSeeders[2].role
           }).expect(200).end(function(err, res) {
             expect(res.body.success).to.eql(true);
-            expect(res.body.message).to.eql('User Successfully Updated!');
+            expect(res.body.message).to.eql('User successfully updated');
             done();
           });
       });
@@ -419,7 +419,7 @@ describe('users', function() {
             expect(res.status).to.be(200);
             expect(res.body.success).to.eql(true);
             expect(res.body.message).to.eql
-              ('User Successfully Updated!');
+              ('User successfully updated');
             done();
           });
       });
@@ -528,6 +528,7 @@ describe('users', function() {
           .expect(404)
           .end(function(err, res) {
             expect(res.status).to.be(404);
+            expect(res.body.success).to.eql(false);
             expect(res.body.message).to.eql('User not found');
             done();
           });
@@ -539,6 +540,7 @@ describe('users', function() {
           .expect(200)
           .end(function(err, res) {
             expect(res.status).to.be(200);
+            expect(res.body.success).to.eql(true);
             expect(res.body.message).to.eql('User deleted');
             done();
           });

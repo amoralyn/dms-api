@@ -87,7 +87,7 @@
           .end(function(err, res) {
             expect(res.status).to.be(200);
             expect(res.body.success).to.eql(true);
-            expect(res.body.message).to.eql('Role successfully created!');
+            expect(res.body.message).to.eql('Role successfully created');
             done();
           });
       });

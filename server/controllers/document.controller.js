@@ -5,6 +5,21 @@
   Role = require('./../models/role.js'),
   Document = require('./../models/document.js');
 
+  function sendError(res, code, msg, bool) {
+    res.status(code).json({
+      success: bool,
+      message: msg
+    });
+  }
+
+  function sendSuccess(res, msg, doc) {
+    res.status(200).json({
+      success: true,
+      message: msg,
+      doc: doc
+    });
+  }
+
 /**
  * [function to create a document]
  * @param  {[http request object]} req [used to get the request query]
@@ -20,65 +35,78 @@
           res.send(err);
           // if role is not found
         } else if(!role) {
-            res.status(400).json({
-              success: false,
-              message: 'Role not found. Create first'
-            });
+            sendError(res, 400, 'Role not found. Create first', false);
           } else {
             //checks if user exists
-            User.findOne({
-              _id: req.body.userId
-            }, function(err, user) {
-                if(err) {
-                  res.send(err);
-                  // if user is not found
-                } else if(!user) {
-                  res.status(404).json({
-                    success: false,
-                    message: 'user not found'
-                  });
-                } else {
-                  //check if document already exists
-                  Document.findOne({
-                    title: req.body.title
-                  }, function (err, doc) {
-                      if (err) {
-                        res.json({
-                          success: false,
-                          message: err
-                        });
-                        // if document is found
-                      } else if (doc) {
-                          res.status(409).json({
-                            success: false,
-                            message: 'Document already exists'
-                          });
-                        } else {
-                            var newDoc = new Document({
-                              title: req.body.title,
-                              content: req.body.content,
-                              userId: req.body.userId,
-                              role: req.body.role
-                            });
-                            //create new document
-                            newDoc.save(function (err, doc) {
-                              if (err) {
-                                res.send(err);
-                              } else {
-                                res.status(200).json({
-                                  success: true,
-                                  message: 'Document successfully created',
-                                  doc: doc
-                                });
-                              }
-                            });
-                          }
-                     });
-                  }
-               });
+            getUser(req, res);
             }
       });
   };
+/**
+ * [function to check if user exists]
+ * @param  {[http request object]} req [used to get request query]
+ * @param  {[http response object]} res [used to respond back to client]
+ * @return {[void]}     [...]
+ */
+  function getUser(req, res) {
+    User.findOne({
+      _id: req.body.userId
+    }, function(err, user) {
+        if(err) {
+          res.send(err);
+          // if user is not found
+        } else if(!user) {
+          sendError(res, 400, 'user not found', false);
+        } else {
+          //check if document already exists
+          getDocument(req, res);
+          }
+       });
+  }
+  /**
+   * [function to check if user exists]
+   * @param  {[http request object]} req [used to get request query]
+   * @param  {[http response object]} res [used to respond back to client]
+   * @return {[void]}     [...]
+   */
+  function getDocument(req, res) {
+    Document.findOne({
+      title: req.body.title
+    }, function (err, doc) {
+        if (err) {
+          sendError(res, null, err, false);
+          // if document is found
+        } else if (doc) {
+          sendError(res, 409, 'Document already exists', false);
+          } else {
+              //create new document
+              createNewDoc(req).save(function (err, doc) {
+                if (err) {
+                  res.send(err);
+                } else {
+                  sendSuccess(res,
+                     'Document successfully created', doc);
+                }
+              });
+            }
+       });
+  }
+/**
+ * [function to create new document]
+ * @param  {[http request object]} req [used to get request query]
+ * @return {[json]}     [returns Document Object]
+ */
+  function createNewDoc(req) {
+     var newDoc = new Document({
+      title: req.body.title,
+      content: req.body.content,
+      userId: req.body.userId,
+      role: req.body.role
+     });
+
+     return newDoc;
+  }
+
 
   /**
    * [function to return all available documents]
@@ -96,10 +124,7 @@
         res.send(err);
         // if no document(s) exists
       } else if (!docs) {
-        res.status(404).json({
-          success: false,
-          message: 'No documents available'
-        });
+        sendError(res, 404, 'No documents available', false);
       } else {
           res.status(200).json(docs);
       }
@@ -119,10 +144,8 @@
         res.send(err);
         //if no document is found
       } else if (!doc) {
-        res.status(404).json({
-          success: false,
-          message: 'Document not found'
-        });
+        sendError(res, 404, 'Document not found', false);
+
       } else {
         res.status(200).json(doc);
       }
@@ -147,10 +170,7 @@
         res.send(err);
       //if no document is found
       } else if (!doc) {
-        res.status(404).json({
-          success: false,
-          message: 'Role has no document'
-        });
+        sendError(res, 404, 'Role has no document', false);
       } else {
         res.status(200).json(doc);
       }
@@ -175,10 +195,7 @@
         res.send(err);
         //if no document is found
       } else if (doc.length < 1) {
-        res.status(404).json({
-          success: false,
-          message: 'User has no document'
-        });
+        sendError(res, 404, 'User has no document', false);
       } else {
         res.status(200).json(doc);
       }
@@ -197,21 +214,12 @@
       req.params.id, req.body,
       function (err, doc) {
         if(err){
-          res.json({
-            success: false,
-            message: 'Document update failed'
-          });
+          sendError(res, null, 'Document update failed', false);
           //if no document is found
         } else if (!doc) {
-          res.status(404).json({
-            success:false,
-            message: 'Document not found'
-          });
+            sendError(res, 404, 'Document not found', false);
         } else {
-          res.status(200).json({
-            success:true,
-            message: 'Document successfully Updated!'
-          });
+            sendSuccess(res, 'Document successfully updated', true);
         }
       });
   };
@@ -229,15 +237,9 @@
         res.send(err);
         //if no document is found
       } else if (!doc) {
-          res.status(404).json({
-            success: false,
-            message: 'Document not found'
-          });
+        sendError(res, 404, 'Document not found', false);
       } else {
-        res.status(200).json({
-          success: true,
-          message: 'Document successfully deleted'
-        });
+        sendSuccess(res, 'Document successfully deleted', true);
       }
     });
   };
