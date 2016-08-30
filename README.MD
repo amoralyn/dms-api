@@ -4,45 +4,53 @@
 
 [![Build Status](https://travis-ci.org/andela-ltijesunimi-israel/dms-api.svg?branch=master)](https://travis-ci.org/andela-ltijesunimi-israel/dms-api)
 
+[![Test Coverage](https://codeclimate.com/github/andela-ltijesunimi-israel/dms-api/badges/coverage.svg)](https://codeclimate.com/github/andela-ltijesunimi-israel/dms-api/coverage)
+
 Document Management System is an application that helps users manage their documents in an organized way. A User can upload a document, edit and share it with other users. Aside from enabling users to properly document their work with regard to category, the application permits users to work collaboratively on documents.
 
 ## Development
 
-This application has been created using [Nodejs](www.nodejs.org) environment and implementing [Express](http://expressjs.com/) as the routing framework and [Mongoose](http://mongoosejs.com/), an object modeling package, to interact with [MongoDB](https://www.mongodb.com/). Authentication has been implemented using [Passport](http://passportjs.org/). For this version, only local strategy has been used. [JWT](https://jwt.io/) tokens have also been used to authenticate routes.
+This application has been created using [Nodejs](www.nodejs.org) environment and implementing [Express](http://expressjs.com/) as the routing framework and [Mongoose](http://mongoosejs.com/), an object modeling package, to interact with [MongoDB](https://www.mongodb.com/). [JWT](https://jwt.io/) tokens have also been used to authenticate routes.
 
 ## Installation.
 
-1. Install [Nodejs](www.nodejs.org) and [MongoDB](www.mongodb.org)
+- Install [Nodejs](www.nodejs.org) and [MongoDB](www.mongodb.org)
 
-2. Clone this repo or download the zipped file.
+- Clone this repo or download the zipped file.
 
-3. Navigate to the master branch.
+- Navigate to the master branch.
 
-4. Run
+- Run
 
-`npm install`
+```bash
+npm install
+```
 
 This will install the required dependencies.
 
-5. Run
+- Run
 
-`npm test`
+```bash
+npm test
+```
 
 to run the tests
 
-6. Run
+- Run
 
-`npm start`
+```bash
+npm start
+```
 
 Use [Postman](https://www.getpostman.com/) to consume the API.
 
-7. Enjoy the ride... :wink:
+- Enjoy the ride... :wink:
 
 ### Code Example
 
 #### Create a new user
 
-```
+```bash
 POST - /api/user
 
 Post data
@@ -60,7 +68,7 @@ Post data
 
 #### Login a user
 
-```
+```bash
 POST - /api/users/login
 
 Post data
@@ -73,7 +81,7 @@ Post data
 
 Documnent is created by an existing and authenticated user.
 
-```
+```bash
 POST - /api/documents
 
 Post data
@@ -86,7 +94,7 @@ Post data
 
 Role is created by an Authorized and Authenticated user (superadmin).
 
-```
+```bash
 POST - /api/role
 
 Post data
@@ -130,7 +138,7 @@ GET	 | /api/roles |	Retrieve all roles
 
 #### Testing.
 
-This application has been tested using [supertest](https://www.npmjs.com/package/supertest), which is a Super-agent driven library for testing Node.js HTTP servers using a fluent API and [Mocha](https://mochajs.org/), which is a feature-rich JavaScript test framework running on Node.js and the browser, making asynchronous testing simple and fun.
+This application has been tested using [supertest](https://www.npmjs.com/package/supertest), which is a Super-agent driven library for testing Node.js.
 
 Thank You.
 

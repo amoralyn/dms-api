@@ -305,7 +305,7 @@
       var newUserToken = jwt.sign(newuser, config.secret, {
         expiresIn: 60*60*24
       });
-      request.put('/api/documents/title/' + title + '/' + doc_id)
+      request.put('/api/documents/' + doc_id)
         .set('x-access-token', newUserToken)
         .send({
           title: 'New file',
@@ -370,7 +370,7 @@
       var newUserToken = jwt.sign(newuser, config.secret, {
         expiresIn: 60*60*24
       });
-      request.delete('/api/documents/title/' + title + '/' + doc_id)
+      request.delete('/api/documents/'  + doc_id)
         .set('x-access-token', newUserToken)
         .expect(403)
         .end(function(err, res) {

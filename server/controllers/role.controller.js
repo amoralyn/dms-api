@@ -3,7 +3,14 @@
 
   var Role = require('./../models/role.js');
 
-
+  /**
+   * [funtion to return error message]
+   * @param  {[http response object]} res  [used to respond back to client]
+   * @param  {[Number]} code [status code]
+   * @param  {[String]} msg  [error message]
+   * @param  {[Boolean]} bool [success state]
+   * @return {[JSON]}      [Error Object]
+   */
   function sendError(res, code, msg, bool) {
     res.status(code).json({
       success: bool,
@@ -11,11 +18,16 @@
     });
   }
 
-  function sendSuccess(res, msg, doc) {
+  /**
+   * [function to return success message]
+   * @param  {[http response object]} res   [used to respond back to client]
+   * @param  {[String]} msg   [success message]
+   * @return {[JSON]}       [Success Object]
+   */
+  function sendSuccess(res, msg) {
     res.status(200).json({
       success: true,
       message: msg,
-      doc: doc
     });
   }
 

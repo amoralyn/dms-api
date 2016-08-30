@@ -5,6 +5,14 @@
   Role = require('./../models/role.js'),
   Document = require('./../models/document.js');
 
+  /**
+   * [funtion to return error message]
+   * @param  {[http response object]} res  [used to respond back to client]
+   * @param  {[Number]} code [status code]
+   * @param  {[String]} msg  [error message]
+   * @param  {[Boolean]} bool [success state]
+   * @return {[JSON]}      [Error Object]
+   */
   function sendError(res, code, msg, bool) {
     res.status(code).json({
       success: bool,
@@ -12,6 +20,13 @@
     });
   }
 
+  /**
+   * [function to return success message]
+   * @param  {[http response object]} res   [used to respond back to client]
+   * @param  {[String]} msg   [success message]
+   * @param  {[JSON]} doc  [document object]
+   * @return {[JSON]}       [Success Object]
+   */
   function sendSuccess(res, msg, doc) {
     res.status(200).json({
       success: true,
@@ -56,7 +71,7 @@
           res.send(err);
           // if user is not found
         } else if(!user) {
-          sendError(res, 400, 'user not found', false);
+          sendError(res, 400, 'User not found', false);
         } else {
           //check if document already exists
           getDocument(req, res);

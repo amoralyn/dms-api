@@ -8,7 +8,14 @@
     helper = require('./../helper/helper'),
     config = require('./../../config/config'),
     jwt = require('jsonwebtoken');
-
+/**
+ * [funtion to return error message]
+ * @param  {[http response object]} res  [used to respond back to client]
+ * @param  {[Number]} code [status code]
+ * @param  {[String]} msg  [error message]
+ * @param  {[Boolean]} bool [success state]
+ * @return {[JSON]}      [Error Object]
+ */
   function sendError(res, code, msg, bool) {
     res.status(code).json({
       success: bool,
@@ -16,6 +23,14 @@
     });
   }
 
+/**
+ * [function to return success message]
+ * @param  {[http response object]} res   [used to respond back to client]
+ * @param  {[String]} msg   [success message]
+ * @param  {[String]} token [access-token]
+ * @param  {[JSON]} user  [user object]
+ * @return {[JSON]}       [Success Object]
+ */
   function sendSuccess(res, msg, token, user) {
     res.status(200).json({
       success: true,
@@ -90,7 +105,7 @@
         res.send(err);
       } else if(user) {
         //if user is found
-        sendError(res, 409, 'user already exists', false);
+        sendError(res, 409, 'User already exists', false);
       } else {
         //ensuring all parameters are entered before creating user
           if (!req.body.firstName && !req.body.lastName) {
@@ -247,7 +262,7 @@ function createNewUser(req) {
     Document.find({
       ownerId: req.params.id
     }, function (err, docs) {
-      if(err){
+      if(err) {
         res.send(err);
         //if document is not found
       } else if (!docs) {

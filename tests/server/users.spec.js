@@ -207,7 +207,7 @@ describe('users', function() {
           .end(function(err, res) {
             expect(res.status).to.be(409);
             expect(res.body.success).to.eql(false);
-            expect(res.body.message).to.eql('user already exists');
+            expect(res.body.message).to.eql('User already exists');
             done();
           });
       });

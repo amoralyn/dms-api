@@ -39,11 +39,6 @@
         .delete(auth.authMiddleware, userAccess.userAccess,
           documentController.deleteDocument);
 
-      router.route('/documents/title/:title/:id')
-        .put(auth.authMiddleware, userAccess.userAccess,
-          documentController.editDocument)
-        .delete(auth.authMiddleware, userAccess.userAccess,
-          documentController.deleteDocument);
     }
 
     module.exports = documentRoutes;
