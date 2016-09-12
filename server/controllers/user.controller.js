@@ -1,4 +1,4 @@
-(function () {
+(function() {
   'use strict';
 
 
@@ -68,7 +68,7 @@
             });
             sendSuccess(res, 'Successfully logged in', true, token, user);
           } else {
-            sendError(res, 404, 'Authentication failed. Wrong password', false);
+            sendError(res, 401, 'Authentication failed. Wrong password', false);
           }
       }
     });

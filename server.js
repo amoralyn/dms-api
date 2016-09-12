@@ -1,12 +1,11 @@
-(() => {
+(function()  {
   'use strict';
 
   var mongoose = require('mongoose'),
     db = require('./config/database'),
-    app = require('./config/express').app,
+    app = require('./config/express'),
     port = process.env.PORT || 9000;
 
-    mongoose.Promise = Promise;
 
   mongoose.connect(db.url || process.env.DATABASE_URL);
 
