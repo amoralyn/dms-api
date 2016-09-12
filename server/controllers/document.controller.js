@@ -50,7 +50,7 @@
           res.send(err);
           // if role is not found
         } else if(!role) {
-            sendError(res, 400, 'Role not found. Create first', false);
+            sendError(res, 404, 'Role not found. Create first', false);
           } else {
             //checks if user exists
             getUser(req, res);
@@ -71,7 +71,7 @@
           res.send(err);
           // if user is not found
         } else if(!user) {
-          sendError(res, 400, 'User not found', false);
+          sendError(res, 404, 'User not found', false);
         } else {
           //check if document already exists
           getDocument(req, res);
@@ -179,13 +179,38 @@
       role: req.params.role
     })
     //parsing the limit
-    .limit(parseInt(req.params.limit))
+    .limit(parseInt(req.param.limit))
     .exec(function (err, doc){
       if (err) {
         res.send(err);
       //if no document is found
       } else if (!doc) {
         sendError(res, 404, 'Role has no document', false);
+      } else {
+        res.status(200).json(doc);
+      }
+    });
+  };
+
+  /**
+   * [function to get documents by its role]
+   * @param  {[http request object]} req [used to get request query]
+   * @param  {[http response object]} res [used to respond back to client]
+   * @return {[json]}     [documents created by a specific role]
+   */
+  exports.getDocumentByTitle = function (req, res) {
+    //find documents with a specific role
+    Document.find({
+      title: req.params.title
+    })
+    //parsing the limit
+    .limit(parseInt(req.params.limit))
+    .exec(function (err, doc) {
+      if (err) {
+        res.send(err);
+        //if no document is found
+      } else if (doc.length < 1) {
+        sendError(res, 404, 'No documents found', false);
       } else {
         res.status(200).json(doc);
       }
@@ -215,6 +240,59 @@
         res.status(200).json(doc);
       }
     });
+  };
+
+  /**
+   * [function to get documents of a specific user]
+   * @param  {[http request object]} req [used to get request query]
+   * @param  {[http response object]} res [used to respond back to client]
+   * @return {[json]}     [documents created by a specific user]
+   */
+
+  exports.getDocumentByDate = function(req, res) {
+    Document.find({
+      dateCreated: {
+            $gte: new Date(req.params.from),
+            $lt: new Date(req.params.to)
+          }
+    })
+    //parsing the limit
+    .limit(parseInt(req.params.limit))
+    .exec(function (err, doc) {
+      if (err) {
+        res.send(err);
+        //if no document is found
+      } else if (doc.length < 1) {
+        sendError(res, 404, 'No documents found', false);
+      } else {
+        res.status(200).json(doc);
+      }
+    });
+  };
+
+  exports.getDocumentByDescendingDate = function(req, res) {
+    Document.find({
+      dateCreated: {
+            $gte: new Date(req.params.from),
+            $lt: new Date(req.params.to)
+          }
+    })
+    //parsing the limit
+    .limit(parseInt(req.params.limit).sort({
+      dateCreated: 'descending'
+    }))
+    .exec(function (err, doc) {
+      if (err) {
+        res.send(err);
+        //if no document is found
+      } else if (doc.length < 1) {
+        sendError(res, 404, 'No documents found', false);
+      } else {
+        res.status(200).json(doc);
+      }
+    });
+
+
   };
 
   /**
@@ -258,4 +336,5 @@
       }
     });
   };
-})();
+
+ })();

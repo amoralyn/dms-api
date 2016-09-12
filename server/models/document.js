@@ -35,11 +35,13 @@
     },
     createdAt : {
       type: Date,
-      default: Date.now
+      default: Date.now,
+      required:true
     },
     updatedAt : {
       type: Date,
-      default: Date.now
+      default: Date.now,
+      required:true
     }
   });
 

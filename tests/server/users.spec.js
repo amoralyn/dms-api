@@ -1,18 +1,18 @@
-(function () {
+ (function () {
   'use strict';
 
 
   var jwt = require('jsonwebtoken'),
     expect = require('expect.js'),
-    server1 = require('./../../config/express').app,
-    request = require('supertest')(server1),
+    app = require('./../../config/express'),
+    request = require('supertest')(app),
     user = require('./../../server/models/user.js'),
     role = require('./../../server/models/role.js'),
     config = require('./../../config/config.js'),
     userSeeders = require('./../../server/seeders/user.seeder.json'),
     roleSeeders = require('./../../server/seeders/role.seeder.json');
 
-describe('users', function() {
+describe('Users', function() {
   describe('/POST: Validate user login', function() {
 
     beforeEach(function(done) {
@@ -60,9 +60,8 @@ describe('users', function() {
           username: userSeeders[2].username,
           password: 'me'
         })
-        .expect(404)
         .end(function(err, res) {
-          expect(res.status).to.be(404);
+          expect(res.status).to.be(401);
           expect(res.body.success).to.equal(false);
           expect(res.body.message).to.equal
             ('Authentication failed. Wrong password');
@@ -76,7 +75,6 @@ describe('users', function() {
           username: 'myName',
           password: userSeeders[2].password
         })
-        .expect(404)
         .end(function(err, res) {
           expect(res.status).to.be(404);
           expect(res.body.success).to.eql(false);
@@ -92,7 +90,6 @@ describe('users', function() {
           username: userSeeders[2].username,
           password: userSeeders[2].password
         })
-        .expect(200)
         .end(function(err, res) {
           expect(res.status).to.be(200);
           expect(res.body.success).to.eql(true);
@@ -147,7 +144,6 @@ describe('users', function() {
             email: userSeeders[0].email,
             role: userSeeders[0].role
           })
-          .expect(200)
           .end(function(err, res) {
             expect(res.status).to.be(200);
             expect(res.body.success).to.eql(true);
@@ -166,7 +162,6 @@ describe('users', function() {
             email: userSeeders[1].email,
             roleId: 'Owner'
           })
-          .expect(404)
           .end(function(err, res) {
             expect(res.status).to.be(404);
             expect(res.body.success).to.eql(false);
@@ -184,7 +179,6 @@ describe('users', function() {
             password: userSeeders[1].password,
             email: userSeeders[1].email,
           })
-          .expect(404)
           .end(function(err, res) {
             expect(res.status).to.be(404);
             expect(res.body.success).to.eql(false);
@@ -203,7 +197,6 @@ describe('users', function() {
             email: userSeeders[1].email,
             role: userSeeders[1].role
           })
-          .expect(409)
           .end(function(err, res) {
             expect(res.status).to.be(409);
             expect(res.body.success).to.eql(false);
@@ -220,7 +213,6 @@ describe('users', function() {
             email: userSeeders[0].email,
             role: userSeeders[0].role
           })
-          .expect(406)
           .end(function(err, res) {
             expect(res.status).to.be(406);
             expect(res.body.success).to.eql(false);
@@ -273,7 +265,6 @@ describe('users', function() {
       it('should return a user when id is specified', function(done) {
         request.get('/api/user/' + userId)
           .set('x-access-token', userToken)
-          .expect(200)
           .end(function(err, res) {
             expect(res.status).to.be(200);
             expect(res.body.length).not.to.be(0);
@@ -286,7 +277,6 @@ describe('users', function() {
       it('returns all the available users in the database', function(done) {
         request.get('/api/users/')
           .set('x-access-token', userToken)
-          .expect(200)
           .end(function(err, res) {
             expect(res.status).to.be(200);
             expect(res.body.length).to.not.be(0);
@@ -300,7 +290,6 @@ describe('users', function() {
         var id = '56617723d2e4a33738e80e4b';
         request.get('/api/user/' + id)
           .set('x-access-token', userToken)
-          .expect(404)
           .end(function(err, res) {
             expect(res.status).to.be(404);
             expect(res.body.success).to.eql(false);
@@ -311,7 +300,6 @@ describe('users', function() {
 
       it('should not return a user unless authenticated', function(done) {
         request.get('/api/user/' + userId)
-          .expect(403)
           .end(function(err, res) {
             expect(res.status).to.be(403);
             expect(res.body.success).to.eql(false);
@@ -373,7 +361,6 @@ describe('users', function() {
             password: 'mine',
             role: userSeeders[2].role
           })
-          .expect(403)
           .end(function(err, res) {
             expect(res.status).to.be(403);
             expect(res.body.success).to.eql(false);
@@ -414,7 +401,6 @@ describe('users', function() {
             password: 'mine',
             role: userSeeders[2].role
           })
-          .expect(200)
           .end(function(err, res) {
             expect(res.status).to.be(200);
             expect(res.body.success).to.eql(true);
@@ -437,7 +423,6 @@ describe('users', function() {
             password: 'mine',
             role: '56617723d2e4a33738e80e4b'
           })
-          .expect(404)
           .end(function(err, res) {
             expect(res.status).to.be(404);
             expect(res.body.success).to.eql(false);
@@ -461,7 +446,6 @@ describe('users', function() {
             password: 'mine',
             role: userSeeders[2].role
           })
-          .expect(404)
           .end(function(err, res) {
             expect(res.status).to.be(404);
             expect(res.body.success).to.eql(false);
@@ -512,7 +496,6 @@ describe('users', function() {
 
       it('delete authenticated users', function(done) {
         request.delete('/api/user/' + userId)
-          .expect(403)
           .end(function(err, res) {
             expect(res.status).to.be(403);
             expect(res.body.success).to.eql(false);
@@ -525,7 +508,6 @@ describe('users', function() {
         var id = '56617723d2e4a33738e80e4b';
         request.delete('/api/user/' + id)
           .set('x-access-token', userToken)
-          .expect(404)
           .end(function(err, res) {
             expect(res.status).to.be(404);
             expect(res.body.success).to.eql(false);
@@ -537,7 +519,6 @@ describe('users', function() {
       it('deletes valid users', function(done) {
         request.delete('/api/user/' + userId)
           .set('x-access-token', userToken)
-          .expect(200)
           .end(function(err, res) {
             expect(res.status).to.be(200);
             expect(res.body.success).to.eql(true);

@@ -71,7 +71,9 @@
  */
   exports.getAllRoles = function (req, res) {
     //find all available roles
+    console.log('Man down');
     Role.find({}).exec(function (err, roles) {
+      // console.log(roles, 'roles');
       if(err) {
         res.send(err);
         // if no role is found
