@@ -7,7 +7,7 @@ exclude_paths:
   - "tests/*"
 engines:
   eslint:
-    enabled: false
+    enabled: true
 
 ratings:
    paths:
