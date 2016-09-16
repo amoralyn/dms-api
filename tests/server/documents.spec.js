@@ -117,7 +117,6 @@
             done();
           });
       });
-    });
 
     describe('Performing CRUD operations', function() {
       var userToken,

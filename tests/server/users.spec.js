@@ -12,7 +12,7 @@
     userSeeders = require('./../../server/seeders/user.seeder.json'),
     roleSeeders = require('./../../server/seeders/role.seeder.json');
 
-describe('users', function() {
+describe('Users', function() {
   describe('/POST: Validate user login', function() {
 
     beforeEach(function(done) {
