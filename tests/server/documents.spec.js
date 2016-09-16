@@ -99,7 +99,7 @@
             content: docSeeders[1].content,
           })
           .end(function(err, res) {
-            expect(res.status).to.be(400);
+            expect(res.status).to.be(404);
             expect(res.body.success).to.eql(false);
             expect(res.body.message).to.eql('Role not found. Create first');
           });
@@ -117,6 +117,7 @@
             done();
           });
       });
+
     });
 
     describe('Performing CRUD operations', function() {
@@ -383,49 +384,6 @@
           });
       });
 
-      it('Ensure that search result can be sort by date created',
-        function(done) {
-          var newuser = new user(userSeeders[0]);
-          newuser.save();
-          var newUserToken = jwt.sign(newuser, config.secret, {
-            expiresIn: 60*60*24
-          });
-            request.get('/api/documents/?q=this&sort=createdAt')
-              .set('x-access-token', newUserToken)
-              .end(function(err, res) {
-                expect(res.status).to.eql(200);
-                expect(res.body.createdAt);
-                doc_id = res.body._id;
-                done();
-              });
-      });
-
-      it('should return documents in ' +
-      'descending order of published date', function (done){
-        var newuser = new user(userSeeders[0]);
-        newuser.save();
-        var newUserToken = jwt.sign(newuser, config.secret, {
-          expiresIn: 60*60*24
-        });
-
-        request.get('/api/documents')
-          .set('x-access-token', newUserToken)
-          .end(function(err, res){
-            var prevSortedDate = docSeeders[0].createdAt,
-              sorted  = true;
-            expect(res.status).to.be(200);
-
-            for (var i in docSeeders) {
-              if (i.createdAt < prevSortedDate) {
-                sorted = false;
-              }
-            }
-
-            done();
-          });
-      });
-
     });
   });
-
 })();

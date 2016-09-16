@@ -18,7 +18,7 @@
 
       //route to get all documents with a specified limit
       router.route('/documents?limit:limit')
-        .get(auth.authMiddleware, documentController.getAllDocuments);
+      .get(auth.authMiddleware, documentController.getAllDocuments);
 
       //route to get all documents with a specific role
       router.route('/documents/role/:role/:limit')
@@ -27,6 +27,20 @@
       //route to get all documents of a specific user
       router.route('/user/:userId/documents')
         .get(auth.authMiddleware, documentController.getDocumentByUser);
+
+      //route to get a document with a specific title
+      router.route('/documents?title:title')
+        .get(auth.authMiddleware, documentController.getDocumentByTitle);
+
+      //route to get documents at a particular date and a limit
+      router.route('/documents?date=createdAt/:limit')
+        .get(auth.authMiddleware,
+          documentController.getDocumentByDescendingDate);
+
+          //route to get documents at a particular date
+          router.route('/documents?createdAt:createdAt')
+            .get(auth.authMiddleware,
+              documentController.getDocumentByDate);
 
       //route to get a document by its Id
       router.route('/documents/:id')
