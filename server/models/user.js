@@ -12,6 +12,7 @@
         firstName : {
           type: String,
           required: true,
+          lowercase: true,
           validate: {
             validator: function (firstName) {
               return /[A-Za-z]/.test(firstName);
@@ -22,6 +23,7 @@
         lastName : {
           type: String,
           required: true,
+          lowercase: true,
           validate: {
             validator: function (lastName) {
               return /[A-Za-z]/.test(lastName);
@@ -33,6 +35,7 @@
       username : {
         type: String,
         required: true,
+        // lowercase: true,
         validate: {
           validator: function(username) {
             return /\w/.test(username);
@@ -43,6 +46,7 @@
       email : {
         type: String,
         required: true,
+        lowercase: true,
         validator: function(email) {
           return /\w/.test(email);
         },

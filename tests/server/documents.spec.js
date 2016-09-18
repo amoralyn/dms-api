@@ -196,25 +196,6 @@
           });
       });
 
-      it(' should return documents within paginated limits', function(done){
-        var newuser = new user(userSeeders[0]);
-        newuser.save();
-        var newUserToken = jwt.sign(newuser, config.secret, {
-          expiresIn: 60*60*24
-        });
-
-        var count = 1,
-          offset = 1;
-
-          request.get('/api/documents?limit=' + count + '&after=' + offset)
-            .set('x-access-token', newUserToken)
-            .end(function(err, res) {
-              expect(res.status).to.be(200);
-              done();
-            });
-      });
-
-
       it('return all documents', function(done) {
         var newdoc = new docs(docSeeders[0]);
         newdoc.save();
@@ -230,8 +211,19 @@
           });
       });
 
+      it('get documents by title', function(done) {
+        request.get('/api/documents?q=' + title)
+        .set('x-access-token', userToken)
+        .end(function(err, res) {
+          expect(res.status).to.be(200);
+          expect(res.body[0].title).to.be('third');
+          done();
+        });
+      });
+
+
       it('get documents by role', function(done) {
-        request.get('/api/documents/role/' + doc_role + '/' + limit)
+        request.get('/api/documents/role/' + doc_role )
           .set('x-access-token', userToken)
           .end(function(err, res) {
             expect(res.status).to.be(200);
@@ -242,8 +234,6 @@
       });
 
       it('get documents by user', function(done) {
-        var newdoc = new docs(docSeeders[0]);
-        newdoc.save();
 
         request.get('/api/user/' + doc_user + '/documents/')
           .set('x-access-token', userToken)
@@ -251,7 +241,6 @@
             expect(res.status).to.be(200);
             expect(res.body.length).to.not.be(0);
             expect(res.body[0].title).to.be('third');
-            expect(res.body[1].title).to.be('first');
             done();
           });
       });
@@ -407,7 +396,7 @@
 
             //creating a document using the content of the document seeder
             docs.create(docSeeders[1]).then(function(doc) {
-              createdAt= doc.createdAt;
+              createdAt= doc.createdAt.toISOString();
             }, function(err) {
               if (err) {
                 console.log(err);
@@ -441,25 +430,26 @@
         });
       });
 
-      it('Documents can be searched within limits', function(done) {
+      it('get documents can be searched within limits', function(done) {
         var limit = 10,
-         offset = 10,
+         offset = 1,
          newDoc1 = new docs(docSeeders[0]),
          newDoc2 = new docs(docSeeders[2]);
          newDoc1.save();
          newDoc2.save();
-         request.get('/api/documents?limit=' + limit + '&after=' + offset )
+         request.get('/api/documents?limit=' + limit + '&offset=' + offset )
           .set('x-access-token', userToken)
           .end(function(err, res) {
             expect(res.status).to.be(200);
             expect(res.body).not.to.be.empty();
             expect(res.body.length).to.be.within(0, limit);
+            expect(res.body.length).to.be(2);
             done();
           });
         });
 
-        it('Documents can be searched by date', function(done) {
-            request.get('/api/documents?createdAt'+ createdAt )
+        it('get documents by date', function(done) {
+            request.get('/api/documents?date='+ createdAt )
             .set('x-access-token', userToken)
             .end(function(err, res) {
               expect(res.status).to.be(200);
@@ -470,38 +460,16 @@
           });
 
 
-      it('Documents can be searched by title', function(done) {
-        var doc_title = 'second';
-        request.get('/api/documents?title=' + doc_title)
-        .set('x-access-token', userToken)
-        .end(function(err, res) {
-          expect(res.status).to.be(200);
-          expect(res.body[0].title).to.be('second');
-          done();
-        });
-      });
 
-
-      it('Documents can be searched by role.', function(done) {
-        var doc_role = 'Supervisor',
-        limit = 1;
-        request.get('/api/documents?role=' + doc_role + limit)
-        .set('x-access-token', userToken)
-        .end(function(err, res) {
-          expect(res.status).to.be(200);
-          expect(res.body.length).to.eql(1);
-          done();
-        });
-      });
-
-      it('Returns documents according to date created', function(done) {
+      it('get documents according to date created', function(done) {
         var newDoc = new docs(docSeeders[0]);
           newDoc.save();
           request.get('/api/documents')
            .set('x-access-token', userToken)
            .end(function(err, res) {
              expect(res.status).to.be(200);
-             expect(res.body[1].createdAt).to.be.above(res.body[0].createdAt);
+             expect(res.body[1].createdAt).to.be.above
+             (res.body[0].createdAt[1]);
              done();
            });
       });

@@ -31,7 +31,9 @@
      * @return {[json]}        [message that permission has been denied]
      */
     exports.roleAuth = function (req, res, next) {
-      Role.findOne({'_id': req.params.id}, function (err, role) {
+      Role.findOne({_id: req.params.id}, function (err, role) {
+        console.log(role, 'role');
+        
         if (err) {
           res.send(err);
         } else if (!role) {

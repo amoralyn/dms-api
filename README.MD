@@ -124,8 +124,7 @@ POST |	/api/documents |	Create a new document
 GET |	/api/documents |	Retrieve all documents
 GET |	/api/documents/:id |	Retrieve a specific document
 GET |	/api/users/:id/documents |	Retrieve all documents created by a user
-GET |	/api/documents/documents?limit:limit |	Retrieve all documents within a specific limit
-GET |	/api/documents/documents/role/:role/:limit |	Retrieve all documents within a specific limit
+GET |	/api/documents/documents/role/:role |	Retrieve all documents within a specific limit
 PUT |	/api/documents/:id |	Update a specific document
 DELETE |	/api/documents/:id |	Remove a specific document from storage
 
