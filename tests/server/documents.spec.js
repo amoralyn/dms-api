@@ -1,16 +1,16 @@
-(function () {
+(function() {
   'use strict';
 
 
   var jwt = require('jsonwebtoken'),
     expect = require('expect.js'),
     server = require('./../../server.js'),
-    app = require('./../../config/express'),
+    app = require('./../../server.js'),
     request = require('supertest')(app),
     user = require('./../../server/models/user.js'),
     role = require('./../../server/models/role.js'),
     docs = require('./../../server/models/document.js'),
-    config = require('./../../config/config.js'),
+    config = require('./../../config/environment.js'),
     userSeeders = require('./../../server/seeders/user.seeder.json'),
     roleSeeders = require('./../../server/seeders/role.seeder.json'),
     docSeeders = require('./../../server/seeders/document.seeder.json');
@@ -25,8 +25,11 @@
           userSeeders[1].role = Role._id;
           user.create(userSeeders[1]).then(function(users) {
             //generating a token for the user created
-            userToken = jwt.sign(users, config.secret, {
-              expiresIn: 60*60*24
+            userToken = jwt.sign({
+              _id: user._id,
+              role: user.role
+            }, config.secretKey, {
+              expiresIn: 60 * 60 * 24
             });
             docSeeders[1].role = Role._id;
             docSeeders[1].userId = users._id;
@@ -67,8 +70,6 @@
       });
 
       it('creates unique documents', function(done) {
-        // docSeeders[1].role = 'Supervisor';
-        // docSeeders[1].ownerId = 'Kendulala';
         request.post('/api/documents')
           .set('x-access-token', userToken)
           .send(docSeeders[1])
@@ -81,7 +82,7 @@
       });
 
       it('should not create document for unauthenticated user', function(done) {
-        request.post('/api/documents/')
+        request.post('/api/documents')
           .send(docSeeders[0])
           .end(function(err, res) {
             expect(res.status).to.be(403);
@@ -122,9 +123,9 @@
 
     describe('Performing CRUD operations', function() {
       var userToken,
-        doc_role,
+        docRole,
         doc_user,
-        doc_id,
+        docId,
         title,
         limit = 1;
       beforeEach(function(done) {
@@ -133,8 +134,11 @@
           //creating a user using the content of the user seeder
           userSeeders[2].role = Role._id;
           user.create(userSeeders[2]).then(function(users) {
-            userToken = jwt.sign(users, config.secret, {
-              expiresIn: 60*60*24
+            userToken = jwt.sign({
+              id: users.id,
+              role: users.role
+            }, config.secretKey, {
+              expiresIn: 60 * 60 * 24
             });
 
             //assigning the role and ownerId of docSeeders[2] to an Id
@@ -145,11 +149,11 @@
             docSeeders[0].userId = users._id;
             docSeeders[0].role = Role._id;
 
-            doc_role = Role._id;
+            docRole = Role._id;
             doc_user = users._id;
             //creating a document using the content of the document seeder
             docs.create(docSeeders[2]).then(function(doc) {
-              doc_id = doc._id;
+              docId = doc._id;
               title = doc.title;
               done();
             }, function(err) {
@@ -205,25 +209,25 @@
           .end(function(err, res) {
             expect(res.status).to.be(200);
             expect(res.body.length).to.not.be(0);
-            expect(res.body[0].title).to.be('third');
-            expect(res.body[1].title).to.be('first');
+            expect(res.body[0].title).to.be('first');
+            expect(res.body[1].title).to.be('third');
             done();
           });
       });
 
       it('get documents by title', function(done) {
         request.get('/api/documents?q=' + title)
-        .set('x-access-token', userToken)
-        .end(function(err, res) {
-          expect(res.status).to.be(200);
-          expect(res.body[0].title).to.be('third');
-          done();
-        });
+          .set('x-access-token', userToken)
+          .end(function(err, res) {
+            expect(res.status).to.be(200);
+            expect(res.body[0].title).to.be('third');
+            done();
+          });
       });
 
 
       it('get documents by role', function(done) {
-        request.get('/api/documents/role/' + doc_role )
+        request.get('/api/documents?role=' + docRole)
           .set('x-access-token', userToken)
           .end(function(err, res) {
             expect(res.status).to.be(200);
@@ -258,7 +262,7 @@
       });
 
       it('should return documents by id', function(done) {
-        request.get('/api/documents/' + doc_id)
+        request.get('/api/documents/' + docId)
           .set('x-access-token', userToken)
           .end(function(err, res) {
             expect(res.status).to.be(200);
@@ -280,8 +284,22 @@
           });
       });
 
+      it('should verify user token', function(done) {
+        var fakeUserToken = '568831c53ff90b4456491b51';
+        request.get('/api/documents/' + docId)
+          .set('x-access-token', fakeUserToken)
+          .end(function(err, res) {
+            expect(res.status).to.be(401);
+            expect(res.body.success).to.eql(false);
+            expect(res.body.message).to.eql('Failed to authenticate token');
+            done();
+          });
+      });
+
+
+
       it('should update a document', function(done) {
-        request.put('/api/documents/' + doc_id)
+        request.put('/api/documents/' + docId)
           .set('x-access-token', userToken)
           .send({
             title: 'New file',
@@ -297,12 +315,15 @@
       });
 
       it('only creator should edit documents', function(done) {
-        var newuser = new user(userSeeders[0]);
-        newuser.save();
-        var newUserToken = jwt.sign(newuser, config.secret, {
-          expiresIn: 60*60*24
+        var newUser = new user(userSeeders[0]);
+        newUser.save();
+        var newUserToken = jwt.sign({
+          _id: newUser.id,
+          role: newUser.role
+        }, config.secretKey, {
+          expiresIn: 60 * 60 * 24
         });
-        request.put('/api/documents/' + doc_id)
+        request.put('/api/documents/' + docId)
           .set('x-access-token', newUserToken)
           .send({
             title: 'New file',
@@ -310,7 +331,6 @@
           })
           .end(function(err, res) {
             expect(res.status).to.be(403);
-            expect(res.body.success).to.eql(false);
             expect(res.body.message).to.eql('Access Denied');
 
             done();
@@ -335,7 +355,7 @@
       });
 
       it('should delete document by id', function(done) {
-        request.delete('/api/documents/' + doc_id)
+        request.delete('/api/documents/' + docId)
           .set('x-access-token', userToken)
           .end(function(err, res) {
             expect(res.status).to.be(200);
@@ -358,16 +378,18 @@
       });
 
       it('should not allow new user delete document of a user', function(done) {
-        var newuser = new user(userSeeders[0]);
-        newuser.save();
-        var newUserToken = jwt.sign(newuser, config.secret, {
-          expiresIn: 60*60*24
+        var newUser = new user(userSeeders[0]);
+        newUser.save();
+        var newUserToken = jwt.sign({
+          _id: newUser.id,
+          role: newUser.role
+        }, config.secretKey, {
+          expiresIn: 60 * 60 * 24
         });
-        request.delete('/api/documents/'  + doc_id)
+        request.delete('/api/documents/' + docId)
           .set('x-access-token', newUserToken)
           .end(function(err, res) {
             expect(res.status).to.eql(403);
-            expect(res.body.success).to.eql(false);
             expect(res.body.message).to.eql('Access Denied');
             done();
           });
@@ -378,7 +400,7 @@
     describe('Search functions', function() {
       var userToken,
         createdAt,
-        doc_id;
+        docId;
       beforeEach(function(done) {
         //creating a role using the content of the role seeder
         role.create(roleSeeders[1]).then(function(Role) {
@@ -386,8 +408,11 @@
           userSeeders[1].role = Role._id;
           user.create(userSeeders[1]).then(function(users) {
             //generating a token for the user created
-            userToken = jwt.sign(users, config.secret, {
-              expiresIn: 60*60*24
+            userToken = jwt.sign({
+              _id: user._id,
+              role: user.role
+            }, config.secretKey, {
+              expiresIn: 60 * 60 * 24
             });
             docSeeders[1].role = Role._id;
             docSeeders[1].userId = users._id;
@@ -396,7 +421,7 @@
 
             //creating a document using the content of the document seeder
             docs.create(docSeeders[1]).then(function(doc) {
-              createdAt= doc.createdAt.toISOString();
+              createdAt = doc.createdAt.toISOString();
             }, function(err) {
               if (err) {
                 console.log(err);
@@ -432,12 +457,13 @@
 
       it('get documents can be searched within limits', function(done) {
         var limit = 10,
-         offset = 1,
-         newDoc1 = new docs(docSeeders[0]),
-         newDoc2 = new docs(docSeeders[2]);
-         newDoc1.save();
-         newDoc2.save();
-         request.get('/api/documents?limit=' + limit + '&offset=' + offset )
+          offset = 1,
+          newDoc1 = new docs(docSeeders[0]),
+          newDoc2 = new docs(docSeeders[2]);
+        newDoc1.save();
+        newDoc2.save();
+
+        request.get('/api/documents?limit=' + limit + '&offset=' + offset)
           .set('x-access-token', userToken)
           .end(function(err, res) {
             expect(res.status).to.be(200);
@@ -446,32 +472,31 @@
             expect(res.body.length).to.be(2);
             done();
           });
-        });
+      });
 
-        it('get documents by date', function(done) {
-            request.get('/api/documents?date='+ createdAt )
-            .set('x-access-token', userToken)
-            .end(function(err, res) {
-              expect(res.status).to.be(200);
-              expect(res.body[0].createdAt);
-              doc_id = res.body._id;
-              done();
-            });
+      it('get documents by date', function(done) {
+        request.get('/api/documents?date=' + createdAt)
+          .set('x-access-token', userToken)
+          .end(function(err, res) {
+            expect(res.status).to.be(200);
+            expect(res.body[0].createdAt);
+            docId = res.body._id;
+            done();
           });
+      });
 
 
 
       it('get documents according to date created', function(done) {
         var newDoc = new docs(docSeeders[0]);
-          newDoc.save();
-          request.get('/api/documents')
-           .set('x-access-token', userToken)
-           .end(function(err, res) {
-             expect(res.status).to.be(200);
-             expect(res.body[1].createdAt).to.be.above
-             (res.body[0].createdAt[1]);
-             done();
-           });
+        newDoc.save();
+        request.get('/api/documents')
+          .set('x-access-token', userToken)
+          .end(function(err, res) {
+            expect(res.status).to.be(200);
+            expect(res.body[1].createdAt).to.be.above(res.body[0].createdAt[1]);
+            done();
+          });
       });
     });
 
