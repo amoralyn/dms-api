@@ -1,15 +1,15 @@
-(function () {
+(function() {
   'use strict';
 
 
   var jwt = require('jsonwebtoken'),
     expect = require('expect.js'),
     server = require('./../../server.js'),
-    app = require('./../../config/express'),
+    app = require('./../../server.js'),
     request = require('supertest')(app),
     user = require('./../../server/models/user.js'),
     role = require('./../../server/models/role.js'),
-    config = require('./../../config/config.js'),
+    config = require('./../../config/environment.js'),
     username = require('./../../config/adminConfig.js').adminName,
     userSeeders = require('./../../server/seeders/user.seeder.json'),
     roleSeeders = require('./../../server/seeders/role.seeder.json');
@@ -23,8 +23,11 @@
           roleId = Role._id;
           userSeeders[0].role = Role._id;
           user.create(userSeeders[0]).then(function(users) {
-            superAdToken = jwt.sign(users, config.secret, {
-              expiresIn: 60*60*24
+            superAdToken = jwt.sign({
+              _id: user._id,
+              role: user.role
+            }, config.secretKey, {
+              expiresIn: 60 * 60 * 24
             });
             done();
           }, function(err) {
@@ -183,20 +186,8 @@
               });
           });
       });
-
-      // it('should allow only superAdministrator delete a role', function(done) {
-      //   var fakeAd = 'fakeSuperAd';
-      //   request.delete('/api/role/superAdministrator/' + fakeAd)
-      //     .set('x-access-token', superAdToken)
-      //     .end(function(err, res) {
-      //       expect(res.status).to.be(403);
-      //       expect(res.body.success).to.eql(false);
-      //       expect(res.body.message).to.eql('Access Denied');
-      //       done();
-      //     });
-      // });
     });
-    describe('get role', function () {
+    describe('get role', function() {
       var roleId,
         superAdToken;
       beforeEach(function(done) {
@@ -204,8 +195,11 @@
           roleId = Role._id;
           userSeeders[0].role = Role._id;
           user.create(userSeeders[0]).then(function(users) {
-            superAdToken = jwt.sign(users, config.secret, {
-              expiresIn: 60*60*24
+            superAdToken = jwt.sign({
+              _id: user._id,
+              role: user.role
+            }, config.secretKey, {
+              expiresIn: 60 * 60 * 24
             });
             done();
           }, function(err) {

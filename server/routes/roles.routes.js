@@ -2,8 +2,7 @@
   'use strict';
 
   var roleController = require('./../controllers/role.controller'),
-    auth = require('./../middlewares/auth'),
-    roleAccess = require('./../middlewares/roleAccess');
+    auth = require('./../middlewares/auth');
 
     function roleRoutes(router) {
 
@@ -16,7 +15,7 @@
 
         //route to create and return all available role(s)
         router.route('/role/superAdministrator/username/:username')
-          .post(auth.verifyAdmin, roleAccess.roleAccess,
+          .post(auth.verifyAdmin, auth.roleAccess,
             roleController.createRole)
           .get(auth.verifyAdmin, roleController.getAllRoles);
 

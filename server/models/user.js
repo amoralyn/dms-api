@@ -3,81 +3,81 @@
 
   var mongoose = require('mongoose'),
     bcrypt = require('bcrypt'),
-    SALT_WORK_FACTOR = 10,
+    saltFactor = require('./../../config/connections').salt,
     Schema = mongoose.Schema,
     ObjectId = Schema.Types.ObjectId;
 
-    var userSchema = new Schema({
-      name : {
-        firstName : {
-          type: String,
-          required: true,
-          lowercase: true,
-          validate: {
-            validator: function (firstName) {
-              return /[A-Za-z]/.test(firstName);
-            },
-            message: "{VALUE} is not valid"
-          }
-        },
-        lastName : {
-          type: String,
-          required: true,
-          lowercase: true,
-          validate: {
-            validator: function (lastName) {
-              return /[A-Za-z]/.test(lastName);
-            },
-            message: "{VALUE} is not valid"
-          }
-        }
-      },
-      username : {
+  var userSchema = new Schema({
+    name: {
+      firstName: {
         type: String,
         required: true,
-        // lowercase: true,
+        lowercase: true,
         validate: {
-          validator: function(username) {
-            return /\w/.test(username);
+          validator: function(firstName) {
+            return /[A-Za-z]/.test(firstName);
           },
           message: "{VALUE} is not valid"
         }
       },
-      email : {
+      lastName: {
         type: String,
         required: true,
         lowercase: true,
-        validator: function(email) {
-          return /\w/.test(email);
-        },
-        message: "{VALUE} is not valid"
-      },
-      password : {
-        type: String,
-        required: true,
-        validator: function(password) {
-          return /\w/.test(password);
-        },
-        message: "{VALUE} is not valid"
-      },
-      role: {
-        type: ObjectId,
-        ref: 'Role',
-        required: true
-      },
-      createdAt : {
-        type: Date,
-        default: Date.now,
-        required:true
-      },
-      updatedAt : {
-        type: Date,
-        default: Date.now,
-        required:true
+        validate: {
+          validator: function(lastName) {
+            return /[A-Za-z]/.test(lastName);
+          },
+          message: "{VALUE} is not valid"
+        }
       }
-    });
+    },
+    username: {
+      type: String,
+      required: true,
+      // lowercase: true,
+      validate: {
+        validator: function(username) {
+          return /\w/.test(username);
+        },
+        message: "{VALUE} is not valid"
+      }
+    },
+    email: {
+      type: String,
+      required: true,
+      lowercase: true,
+      validator: function(email) {
+        return /\w/.test(email);
+      },
+      message: "{VALUE} is not valid"
+    },
+    password: {
+      type: String,
+      required: true,
+      validator: function(password) {
+        return /\w/.test(password);
+      },
+      message: "{VALUE} is not valid"
+    },
+    role: {
+      type: ObjectId,
+      ref: 'Role',
+      required: true
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      required: true
+    },
+    updatedAt: {
+      type: Date,
+      default: Date.now,
+      required: true
+    }
+  });
 
-    userSchema.pre('save', function(next) {
+  userSchema.pre('save', function(next) {
     var user = this;
 
     // only hash the password if it has been modified (or is new)
@@ -86,7 +86,7 @@
     }
 
     // generate a salt
-    bcrypt.genSalt(SALT_WORK_FACTOR, function(err, salt) {
+    bcrypt.genSalt(saltFactor, function(err, salt) {
       if (err) {
         return next(err);
       }

@@ -1,40 +1,30 @@
-(function () {
+(function() {
   'use strict';
 
   var documentController = require('./../controllers/document.controller'),
-    auth = require('./../middlewares/auth'),
-    userAccess = require('./../middlewares/userAccess');
+    auth = require('./../middlewares/auth');
 
-    function documentRoutes(router) {
+  function documentRoutes(router) {
 
-      //route to create a new document
-      router.route('/documents')
-        .post(auth.authMiddleware, documentController.createDocument);
+    //route to create a new document
+    router.route('/documents')
+      .post(auth.middleware, documentController.createDocument)
+      .get(auth.middleware, documentController.getAllDocuments);
 
-      //route to get all documents
-      router.route('/documents')
-        .get(auth.authMiddleware, documentController.getAllDocuments);
+    //route to get all documents of a specific user
+    router.route('/user/:userId/documents')
+      .get(auth.middleware, documentController.getDocumentByUser);
 
-      //route to get all documents with a specific role
-      router.route('/documents/role/:role')
-        .get(auth.authMiddleware, documentController.getDocumentByRole);
+    //route to get a document by its Id
+    router.route('/documents/:id')
+      .get(auth.middleware, documentController.getADocument)
+      .put(auth.middleware, auth.userAccess,
+        documentController.editDocument)
+      .delete(auth.middleware, auth.userAccess,
+        documentController.deleteDocument);
 
-      //route to get all documents of a specific user
-      router.route('/user/:userId/documents')
-        .get(auth.authMiddleware, documentController.getDocumentByUser);
-
-      //route to get a document by its Id
-      router.route('/documents/:id')
-        .get(auth.authMiddleware, documentController.getADocument);
-
-      //route to edit and delete a documet with a specific Id
-      router.route('/documents/:id')
-        .put(auth.authMiddleware, userAccess.userAccess,
-          documentController.editDocument)
-        .delete(auth.authMiddleware, userAccess.userAccess,
-          documentController.deleteDocument);
-
-    }
-
-    module.exports = documentRoutes;
+    //   router.route('/document/:role')
+    //     .get(auth.middleware, documentController.getDocumentByRole)
+  }
+  module.exports = documentRoutes;
 })();

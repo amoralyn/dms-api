@@ -96,6 +96,7 @@
         "it",
         "assert",
         "beforeEach",
-        "beforeAll"
+        "beforeAll",
+        "exports"
     ]
 }
